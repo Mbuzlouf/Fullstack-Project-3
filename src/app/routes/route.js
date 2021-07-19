@@ -7,6 +7,8 @@ import { verify } from "crypto";
 
 const setupRouts = (app) => {
   app.get("/students", async (req, res) => {
+    const conditions = {};
+
     try {
       const token = req.headers.authorization;
 
@@ -30,9 +32,19 @@ const setupRouts = (app) => {
       res.send(error.message);
     }
 
-    const students = await StudentModel.find({});
+    const students = await StudentModel.find(conditions);
     res.send(students);
   });
+
+  app.get("/students/:id", async (req, res) => {
+    const conditions = {};
+    if (req.params.id) {
+      conditions.id = { $in: req.params.id };
+      const studentId = await StudentModel.findById(req.params.id);
+      res.send(studentId);
+    }
+  });
+
   app.get("*", (req, res) => {
     res.send("You wrote an invalid URL");
   });
